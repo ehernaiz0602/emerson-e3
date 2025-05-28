@@ -1,0 +1,13 @@
+{
+  "loglevel": "info",
+  "logfile_maxsize_mb": 100,
+  "max_offline_messages": 1000,
+  "offline_message_trimsize": 250,
+  "http_retries": 3,
+  "retry_delay_ms": 3000,
+  "http_timeout": 3,
+  "request_delay_ms": 5,
+  "publish_interval": 10,
+  "workers": 2,
+  "gui": true
+}

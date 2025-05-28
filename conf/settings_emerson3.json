@@ -1,0 +1,13 @@
+{
+  "polling_interval": 180,
+  "devices": [
+    {
+      "name": "my_first_bms_controller",
+      "ip": "127.0.0.2"
+    },
+    {
+      "name": "my_second_bms_controller",
+      "ip": "127.0.0.3"
+    }
+  ]
+}

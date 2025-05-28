@@ -1,0 +1,10 @@
+{
+  "tenant_id": "",
+  "client_id": "",
+  "device_id": "",
+  "scope_id": "",
+  "secret_name": "",
+  "certificate_name": "",
+  "keyvault": "",
+  "sas_ttl": 90
+}
