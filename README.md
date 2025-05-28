@@ -23,7 +23,12 @@ Edit the files inside the conf/ directory:
 
 * ptrs.json – Definitions of apps and BMS points to pull data from.
 
-3. Run the application:
+3. Install required python packages:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4. Run the application:
     ```bash
     py src/main.py
     ```
