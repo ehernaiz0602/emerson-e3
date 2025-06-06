@@ -8,7 +8,7 @@ import base64
 import hashlib
 import hmac
 import logging
-import uuid
+# import uuid
 from datetime import datetime, timezone
 import json
 import os
@@ -72,31 +72,47 @@ class IoTDevice:
 
 
     async def send_messages(self, messages: list[tuple[str]]) -> bool:
+        maximized_payloads = []
+
+        message_struct = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "payload": [],
+        }
+
+        for i, msg in enumerate(messages):
+
+            filtered_message = {"timestamp": msg[0], "ip": msg[1], "response": msg[2], "method": msg[3]}
+            message_struct["payload"].append(filtered_message)
+            string_payload = json.dumps(message_struct)
+            message = Message(string_payload)
+            size = message.get_size()
+
+            if size >= 256_000:
+                # Remove the last message that caused overflow
+                message_struct["payload"].pop()
+                payload_str = json.dumps(message_struct)
+                maximized_payloads.append(Message(payload_str))
+
+                # Start new message_struct with the current message
+                message_struct = {
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "payload": [filtered_message],
+                }
+
+        # Handle remaining messages
+        if message_struct["payload"]:
+            payload_str = json.dumps(message_struct)
+            maximized_payloads.append(Message(payload_str))
+
+        maximized_payloads = [msg for msg in maximized_payloads if msg.get_size() <= 256_000]
 
         async def send_message(message):
-            message_struct = {
-                "timestamp": message[0],
-                "ip": message[1],
-                "response": message[2],
-                "method": message[3]
-            }
-
-            payload = {
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-                "payload": message_struct 
-            }
-
-            payload_string = json.dumps(payload)
-
-            logging.debug(f"Sending {payload_string} to {self.device_id}")
-            logging.debug(f"Sending to {self.device_id}")
-            message = Message(payload_string)
-            message.message_id = uuid.uuid4()
+            logging.debug(f"Sending message to IoTHub at {self.device_id}")
             await self.device_client.send_message(message)
 
         if self.connected:
             try:
-                tasks = [send_message(msg) for msg in messages]
+                tasks = [send_message(msg) for msg in maximized_payloads]
                 await asyncio.gather(*tasks)
                 logging.debug("Sucessfully sent messages to IoTHub")
                 return True
