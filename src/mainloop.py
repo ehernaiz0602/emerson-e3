@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from time import perf_counter
-import random
+# import random
 from datetime import datetime
 
 import bms
@@ -26,7 +26,7 @@ async def mainloop(settings_emerson3, settings_general, settings_azure, gui):
     tasks.append(maintain_database(settings_general))
     tasks.append(iot_connection_status_checker(iot_device, gui))
     tasks.append(update_gui(gui, controllers))
-    tasks.append(joke())
+    # tasks.append(joke())
 
     await asyncio.gather(*tasks)
 
@@ -180,6 +180,5 @@ async def joke():
         "With great power comes an expensive electric bill!"
     ]
     while True:
-        if random.randint(1, 250) == 1:
-            logging.info(f"[JOKE]: {random.choice(jokes)}")
-        await asyncio.sleep(5)
+        logging.info(f"[JOKE]: {jokes}")
+        await asyncio.sleep(30*60)
